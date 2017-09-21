@@ -8,11 +8,11 @@
 #define VID_LOC(x, y) (x + y * SCREEN_WIDTH)
 #define MAX_VID_LOC (SCREEN_WIDTH * SCREEN_HEIGHT)
 
-int vid_loc = 0;
-int curs_x = 0;
-int curs_y = 0;
+uint16_t vid_loc = 0;
+uint8_t curs_x = 0;
+uint8_t curs_y = 0;
 
-static inline void write_character(char c, char attr, int loc)
+static inline void write_character(char c, uint8_t attr, uint16_t loc)
 {
 	loc = loc << 1;
 	VIDPTR[loc] = c;
@@ -43,7 +43,7 @@ void term_putc(const char c)
 	}
 }
 
-void term_set_cursor(char loc_x, char loc_y)
+void term_set_cursor(uint8_t loc_x, uint8_t loc_y)
 {
 	if (loc_x >= 0 && loc_x < SCREEN_WIDTH)
 	{
@@ -67,7 +67,7 @@ void term_puts(const char* str)
 
 void term_cls()
 {
-	int j = 0;
+	uint16_t j = 0;
 	while(j < MAX_VID_LOC)
 	{
 		write_character(' ', 0x07, j++);

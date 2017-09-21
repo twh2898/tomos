@@ -2,9 +2,10 @@
  * kernel.c
  */
 
+#include <stdint.h>
 #include <kernel/tty.h>
 
-static inline void outb(unsigned short int port, unsigned char val)
+static inline void outb(uint16_t port, uint8_t val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
     /* There's an outb %al, $imm8  encoding, for compile-time constant port numbers that fit in 8b.  (N constraint).
@@ -13,9 +14,9 @@ static inline void outb(unsigned short int port, unsigned char val)
      * %1 expands to %dx because  port  is a uint16_t.  %w1 could be used if we had the port number a wider C type */
 }
 
-static inline unsigned char inb(unsigned short int port)
+static inline uint8_t inb(uint16_t port)
 {
-    unsigned char ret;
+    uint8_t ret;
     asm volatile ( "inb %1, %0"
                    : "=a"(ret)
                    : "Nd"(port) );
@@ -60,17 +61,17 @@ void kmain(void)
 	{
 		term_set_cursor(12, 2);
 		outb(0x70, 0x04);
-		unsigned char hour = inb(0x71);
+		uint8_t hour = inb(0x71);
 		puti(hour);
 		term_putc(':');
 
 		outb(0x70, 0x02);
-		unsigned char min = inb(0x71);
+		uint8_t min = inb(0x71);
 		puti(min);
 		term_putc(':');
 
 		outb(0x70, 0x00);
-		unsigned char sec = inb(0x71);
+		uint8_t sec = inb(0x71);
 		puti(sec);
 	}
 
