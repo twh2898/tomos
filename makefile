@@ -5,7 +5,7 @@
 ASM = nasm
 ASMFLAGS = -f elf32
 CC = gcc
-CFLAGS = -m32 -c -nostdinc -Iincludes -fno-builtin
+CFLAGS = -O2 -m32 -c -nostdinc -Iincludes -fno-builtin
 LD = ld
 LDFLAGS = -m elf_i386 -T link.ld
 NAME = kernel
@@ -17,7 +17,7 @@ all: clean build run
 
 build: compile
 	$(LD) $(LDFLAGS) -o $(NAME) $(ODIR)kasm.o $(ODIR)kernel.o $(ODIR)tdriver.o
-	
+
 $(ODIR)%.o: $(SDIR)%.c
 	$(CC) $(CFLAGS) -o $@ $<
 

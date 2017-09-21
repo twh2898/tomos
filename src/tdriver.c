@@ -2,7 +2,7 @@
  * stdio.c
  */
 
-#include <terminal.h>
+#include <kernel/tty.h>
 
 #define VIDPTR ((char*)0xb8000)
 #define VID_LOC(x, y) (x + y * SCREEN_WIDTH)

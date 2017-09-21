@@ -2,7 +2,7 @@
  * kernel.c
  */
 
-#include <terminal.h>
+#include <kernel/tty.h>
 
 static inline void outb(unsigned short int port, unsigned char val)
 {
