@@ -26,10 +26,10 @@ void puti(int num)
 {
 	if (!num)
 	{
-		puts("0");
+		term_puts("0");
 		return;
 	}
-	
+
 	int digits = 0;
 	int res = 0;
 	while (num)
@@ -41,7 +41,7 @@ void puti(int num)
 	}
 	while (digits--)
 	{
-		putc('0' + (res % 10));
+		term_putc('0' + (res % 10));
 		res = res / 10;
 	}
 }
@@ -49,31 +49,31 @@ void puti(int num)
 void kmain(void)
 {
 	const char *str = "my super first kernel";
-	
-	cls();
-	puts(str);
-	puts("\n");
-	puts("Hi");
-	puts("\nThe time is ");
-	
+
+	term_cls();
+	term_puts(str);
+	term_puts("\n");
+	term_puts("Hi");
+	term_puts("\nThe time is ");
+
 	for (;;)
 	{
-		set_cursor(12, 2);
+		term_set_cursor(12, 2);
 		outb(0x70, 0x04);
 		unsigned char hour = inb(0x71);
 		puti(hour);
-		putc(':');
-		
+		term_putc(':');
+
 		outb(0x70, 0x02);
 		unsigned char min = inb(0x71);
 		puti(min);
-		putc(':');
-		
+		term_putc(':');
+
 		outb(0x70, 0x00);
 		unsigned char sec = inb(0x71);
 		puti(sec);
 	}
-	
-	
+
+
 	return;
 }
