@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <kernel/asm.h>
 #include <kernel/tty.h>
+#include <kernel/keyboard.h>
 
 void kmain(void)
 {
@@ -12,7 +13,7 @@ void kmain(void)
 	term_set_color(reset);
 	term_cls();
 
-	const char *str = "my super first kernel\n";
+	const char *str = "my first kernel\n";
 	puts(str);
 
 	term_set_color(reset);
@@ -48,9 +49,16 @@ void kmain(void)
 	term_disable_cursor();
 	term_enable_cursor(14, 15);
 
-/*
 	for (;;)
 	{
+		char scanCode = waitScanCode();
+		char key = asChar(scanCode);
+		term_putc(key);
+		if (scanCode == 0x1)
+		{
+			break;
+		}
+		/*
 		term_set_cursor(60, 0);
 		outb(0x70, 0x04);
 		uint8_t hour = inb(0x71);
@@ -67,8 +75,11 @@ void kmain(void)
 		//~ term_puti(sec, 10, false);
 
 		printf("The time is %d:%d:%d", hour, min, sec);
+		*/
 	}
-*/
 
+	term_set_color(0x07);
+	//~ term_cls();
+	printf("System Halting!");
 	return;
 }
