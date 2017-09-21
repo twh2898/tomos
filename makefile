@@ -8,7 +8,7 @@ CC = gcc
 CFLAGS = -O2 -m32 -c -nostdinc -Iincludes -fno-builtin
 LD = ld
 LDFLAGS = -m elf_i386 -T link.ld
-NAME = kernel
+NAME = kernel.bin
 
 SDIR = src/
 ODIR = build/

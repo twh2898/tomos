@@ -1,2 +1,2 @@
-*.o
-kernel
+build/*
+kernel.bin
