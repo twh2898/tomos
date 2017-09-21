@@ -9,8 +9,8 @@ build:
 
 compile:
 	nasm -f elf32 kernel.asm -o kasm.o
-	gcc -m32 -c kernel.c -o kc.o -nostdinc -Iincludes
-	gcc -m32 -c stdio.c -o stdio.o -nostdinc -Iincludes
+	gcc -m32 -c kernel.c -o kc.o -nostdinc -Iincludes -fno-builtin
+	gcc -m32 -c stdio.c -o stdio.o -nostdinc -Iincludes -fno-builtin
 
 run:
 	qemu-system-i386 -kernel kernel
