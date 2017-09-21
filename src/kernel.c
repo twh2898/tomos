@@ -23,56 +23,40 @@ static inline uint8_t inb(uint16_t port)
     return ret;
 }
 
-void puti(int num)
-{
-	if (!num)
-	{
-		term_puts("0");
-		return;
-	}
-
-	int digits = 0;
-	int res = 0;
-	while (num)
-	{
-		res = res * 10;
-		res = res + (num % 10);
-		num = num / 10;
-		digits++;
-	}
-	while (digits--)
-	{
-		term_putc('0' + (res % 10));
-		res = res / 10;
-	}
-}
-
 void kmain(void)
 {
-	const char *str = "my super first kernel";
-
 	term_cls();
-	term_puts(str);
-	term_puts("\n");
-	term_puts("Hi");
-	term_puts("\nThe time is ");
+
+	const char *str = "my super first kernel\n";
+	term_set_color(vga_color(VGA_COLOR_LIGHT_MAGENTA, VGA_COLOR_BROWN));
+	puts(str);
+
+	term_set_color(0x07);
+	printf("Lets demo some cool features of printf\n");
+	size_t len = printf("Like numbers %% d%d d%d u%u x%x X%X and characters %c %s cool? %b\n", 10, -10, 10, 0xe0f, 0xff3, 'c', "string", true);
+	int store;
+	printf("That was %d characters!%n And that sentance was ", len, &store);
+	printf("%d\n", store);
+	printf("Last one, here is are two pointers 0x%p 0x%p\n", &str, &store);
 
 	for (;;)
 	{
-		term_set_cursor(12, 2);
+		term_set_cursor(60, 0);
 		outb(0x70, 0x04);
 		uint8_t hour = inb(0x71);
-		puti(hour);
-		term_putc(':');
+		//~ term_puti(hour, 10, false);
+		//~ term_putc(':');
 
 		outb(0x70, 0x02);
 		uint8_t min = inb(0x71);
-		puti(min);
-		term_putc(':');
+		//~ term_puti(min, 10, false);
+		//~ term_putc(':');
 
 		outb(0x70, 0x00);
 		uint8_t sec = inb(0x71);
-		puti(sec);
+		//~ term_puti(sec, 10, false);
+
+		printf("The time is %d:%d:%d", hour, min, sec);
 	}
 
 
