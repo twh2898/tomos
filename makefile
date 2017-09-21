@@ -2,19 +2,31 @@
 # makefile
 #
 
-all: clean compile build run
+ASM = nasm
+ASMFLAGS = -f elf32
+CC = gcc
+CFLAGS = -m32 -c -nostdinc -Iincludes -fno-builtin
+LD = ld
+LDFLAGS = -m elf_i386 -T link.ld
+NAME = kernel
 
-build: 
-	ld -m elf_i386 -T link.ld -o kernel kasm.o kc.o stdio.o
+SDIR = src/
+ODIR = build/
 
-compile:
-	nasm -f elf32 kernel.asm -o kasm.o
-	gcc -m32 -c kernel.c -o kc.o -nostdinc -Iincludes -fno-builtin
-	gcc -m32 -c stdio.c -o stdio.o -nostdinc -Iincludes -fno-builtin
+all: clean build run
+
+build: compile
+	$(LD) $(LDFLAGS) -o $(NAME) $(ODIR)kasm.o $(ODIR)kernel.o $(ODIR)tdriver.o
+	
+$(ODIR)%.o: $(SDIR)%.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+compile: $(ODIR)tdriver.o $(ODIR)kernel.o
+	$(ASM) $(ASMFLAGS) $(SDIR)kernel.asm -o $(ODIR)kasm.o
 
 run:
-	qemu-system-i386 -kernel kernel
+	qemu-system-i386 -kernel $(NAME)
 
 clean:
-	if [ -f *.o ]; then rm *.o; fi
-	if [ -f kernel ]; then rm kernel; fi
+	if ls $(ODIR)* 1> /dev/null 2>&1; then rm $(ODIR)*; fi
+	if [ -f $(NAME) ]; then rm $(NAME); fi
