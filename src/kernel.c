@@ -3,35 +3,19 @@
  */
 
 #include <stdint.h>
+#include <kernel/asm.h>
 #include <kernel/tty.h>
-
-static inline void outb(uint16_t port, uint8_t val)
-{
-    asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
-    /* There's an outb %al, $imm8  encoding, for compile-time constant port numbers that fit in 8b.  (N constraint).
-     * Wider immediate constants would be truncated at assemble-time (e.g. "i" constraint).
-     * The  outb  %al, %dx  encoding is the only option for all other cases.
-     * %1 expands to %dx because  port  is a uint16_t.  %w1 could be used if we had the port number a wider C type */
-}
-
-static inline uint8_t inb(uint16_t port)
-{
-    uint8_t ret;
-    asm volatile ( "inb %1, %0"
-                   : "=a"(ret)
-                   : "Nd"(port) );
-    return ret;
-}
 
 void kmain(void)
 {
+	uint8_t reset = 0x17;
+	term_set_color(reset);
 	term_cls();
 
 	const char *str = "my super first kernel\n";
-	term_set_color(vga_color(VGA_COLOR_LIGHT_MAGENTA, VGA_COLOR_BROWN));
 	puts(str);
 
-	term_set_color(0x07);
+	term_set_color(reset);
 	printf("Lets demo some cool features of printf\n");
 	size_t len = printf("Like numbers %% d%d d%d u%u x%x X%X and characters %c %s cool? %b\n", 10, -10, 10, 0xe0f, 0xff3, 'c', "string", true);
 	int store;
@@ -39,6 +23,32 @@ void kmain(void)
 	printf("%d\n", store);
 	printf("Last one, here is are two pointers 0x%p 0x%p\n", &str, &store);
 
+	printf("Now for the real test, colors:\n");
+	int i, j;
+	//~ for (i = 0; i <= 0xF; i++)
+	//~ {
+		//~ for (j = 0; j <= 0xF; j++)
+		//~ {
+			//~ term_set_color(vga_color(j, i));
+			//~ printf("%X%X ", j, i);
+		//~ }
+		//~ puts("\n");
+	//~ }
+
+	term_set_color(reset);
+	//~ for (i = 0; i <= 0xF; i++)
+	//~ {
+		//~ for (j = 0; j <= 0xF; j++)
+		//~ {
+			//~ printf(" %c ", j | i << 4);
+		//~ }
+		//~ puts("\n");
+	//~ }
+
+	term_disable_cursor();
+	term_enable_cursor(14, 15);
+
+/*
 	for (;;)
 	{
 		term_set_cursor(60, 0);
@@ -58,7 +68,7 @@ void kmain(void)
 
 		printf("The time is %d:%d:%d", hour, min, sec);
 	}
-
+*/
 
 	return;
 }
