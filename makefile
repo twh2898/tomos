@@ -16,13 +16,13 @@ ODIR = build/
 all: clean build run
 
 build: compile
-	$(LD) $(LDFLAGS) -o $(NAME) $(ODIR)kasm.o $(ODIR)kernel.o $(ODIR)tdriver.o
+	$(LD) $(LDFLAGS) -o $(NAME) $(ODIR)boot.o $(ODIR)kernel.o $(ODIR)tdriver.o
 
 $(ODIR)%.o: $(SDIR)%.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 compile: $(ODIR)tdriver.o $(ODIR)kernel.o
-	$(ASM) $(ASMFLAGS) $(SDIR)kernel.asm -o $(ODIR)kasm.o
+	$(ASM) $(ASMFLAGS) $(SDIR)boot.asm -o $(ODIR)boot.o
 
 run:
 	qemu-system-i386 -kernel $(NAME)
