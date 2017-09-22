@@ -48,6 +48,16 @@ void term_disable_cursor()
 	outb(0x3D5, 0x3f); //bits 6-7 must be 0 , if bit 5 set the cursor is disable  , bits 0-4 controll the cursor shape .
 }
 
+uint8_t get_cursor_x(void)
+{
+	return curs_x;
+}
+
+uint8_t get_cursor_y(void)
+{
+	return curs_y;
+}
+
 static inline void shift_lines()
 {
 	int x, y;
@@ -70,15 +80,41 @@ static inline void shift_lines()
 
 void term_putc(const char c)
 {
-	if (c == '\n')
+	switch (c)
 	{
-		curs_y++;
-		curs_x = 0;
-	}
-	else
-	{
-		write_character(c, color, vid_loc(curs_x++, curs_y));
-	}
+		case '\n':
+		{
+			curs_y++;
+			curs_x = 0;
+		}
+		break;
+		case '\b':
+		{
+			if (curs_x == 0)
+			{
+				curs_x = SCREEN_WIDTH;
+			}
+			curs_x--;
+
+			write_character(' ', color, vid_loc(curs_x, curs_y));
+		}
+		break;
+		case '\t':
+		{
+			write_character(' ', color, vid_loc(curs_x++, curs_y));
+			while (curs_x % 4 != 0)
+			{
+				if (curs_x >= SCREEN_WIDTH)
+				{
+					break;
+				}
+				write_character(' ', color, vid_loc(curs_x++, curs_y));
+			}
+		}
+		break;
+		default:
+			write_character(c, color, vid_loc(curs_x++, curs_y));
+		}
 
 	if (curs_x >= SCREEN_WIDTH)
 	{

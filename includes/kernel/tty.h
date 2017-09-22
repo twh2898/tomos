@@ -47,6 +47,9 @@ static inline uint8_t vga_color(VGA_COLOR fg, VGA_COLOR bg) {
  */
 extern void term_set_cursor(uint8_t loc_x, uint8_t loc_y);
 
+extern uint8_t get_cursor_x(void);
+extern uint8_t get_cursor_y(void);
+
 extern void term_enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 extern void term_disable_cursor();
 

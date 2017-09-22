@@ -9,7 +9,7 @@
 
 void kmain(void)
 {
-	uint8_t reset = 0x17;
+	uint8_t reset = 0x07;
 	term_set_color(reset);
 	term_cls();
 
@@ -49,37 +49,59 @@ void kmain(void)
 	term_disable_cursor();
 	term_enable_cursor(14, 15);
 
+	bool lshift = false;
+	bool rshift = false;
+
+	int count_1 = 0;
+	char lastScanCode = 0;
+	uint8_t last_sec = 0;
+
 	for (;;)
 	{
-		char scanCode = waitScanCode();
-		char key = asChar(scanCode);
-		term_putc(key);
-		if (scanCode == 0x1)
+		char scanCode = inb(0x60);
+		if (scanCode != lastScanCode)
+		{
+			lastScanCode = scanCode;
+			char key = asChar(scanCode, false);
+
+			if (key > 0)
+			{
+				term_putc(key);
+			}
+		}
+
+		if (lastScanCode == 0x1)
 		{
 			break;
 		}
-		/*
-		term_set_cursor(60, 0);
-		outb(0x70, 0x04);
-		uint8_t hour = inb(0x71);
-		//~ term_puti(hour, 10, false);
-		//~ term_putc(':');
-
-		outb(0x70, 0x02);
-		uint8_t min = inb(0x71);
-		//~ term_puti(min, 10, false);
-		//~ term_putc(':');
-
 		outb(0x70, 0x00);
 		uint8_t sec = inb(0x71);
 		//~ term_puti(sec, 10, false);
 
-		printf("The time is %d:%d:%d", hour, min, sec);
-		*/
+		if (sec != last_sec)
+		{
+			uint8_t last_x = get_cursor_x();
+			uint8_t last_y = get_cursor_y();
+			term_set_cursor(60, 0);
+			outb(0x70, 0x04);
+			uint8_t hour = inb(0x71);
+			//~ term_puti(hour, 10, false);
+			//~ term_putc(':');
+
+			outb(0x70, 0x02);
+			uint8_t min = inb(0x71);
+			//~ term_puti(min, 10, false);
+			//~ term_putc(':');
+
+			last_sec = sec;
+			printf("The time is %d:%d:%d", hour, min, sec);
+			term_set_cursor(last_x, last_y);
+		}
 	}
 
 	term_set_color(0x07);
-	//~ term_cls();
+	term_cls();
 	printf("System Halting!");
+	term_disable_cursor();
 	return;
 }
