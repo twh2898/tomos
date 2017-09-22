@@ -3,12 +3,16 @@
  */
 
 #include <stdint.h>
+#include <boot.h>
 #include <kernel/asm.h>
+#include <kernel/idt.h>
 #include <kernel/tty.h>
 #include <kernel/keyboard.h>
 
 void kmain(void)
 {
+	idt_init();
+
 	uint8_t reset = 0x07;
 	term_set_color(reset);
 	term_cls();
@@ -24,7 +28,7 @@ void kmain(void)
 	printf("%d\n", store);
 	printf("Last one, here is are two pointers 0x%p 0x%p\n", &str, &store);
 
-	printf("Now for the real test, colors:\n");
+	//~ printf("Now for the real test, colors:\n");
 	int i, j;
 	//~ for (i = 0; i <= 0xF; i++)
 	//~ {
@@ -46,6 +50,8 @@ void kmain(void)
 		//~ puts("\n");
 	//~ }
 
+	printf("Testing some assembly: 0x%X", inb(0x60));
+
 	term_disable_cursor();
 	term_enable_cursor(14, 15);
 
@@ -58,6 +64,7 @@ void kmain(void)
 
 	for (;;)
 	{
+		/*
 		char scanCode = inb(0x60);
 		if (scanCode != lastScanCode)
 		{
@@ -74,6 +81,8 @@ void kmain(void)
 		{
 			break;
 		}
+		*/
+
 		outb(0x70, 0x00);
 		uint8_t sec = inb(0x71);
 		//~ term_puti(sec, 10, false);
