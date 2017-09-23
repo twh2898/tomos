@@ -5,9 +5,9 @@
 ASM = nasm
 ASMFLAGS = -f elf32
 CC = gcc
-CFLAGS = -O2 -m32 -c -Iincludes -fno-builtin -ffreestanding
+CFLAGS = -O2 -m32 -c -Iincludes -nostdlib -fno-builtin -ffreestanding -fno-stack-protector
 LD = ld
-LDFLAGS = -m elf_i386 -T link.ld
+LDFLAGS = -m elf_i386 -T link.ld -nostdlib
 NAME = kernel.bin
 
 SDIR = src/

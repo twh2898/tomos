@@ -6,6 +6,7 @@
 #include <kernel/asm.h>
 #include <kernel/idt.h>
 #include <kernel/tty.h>
+#include <kernel/keyboard.h>
 
 struct IDT_entry IDT[IDT_SIZE];
 
