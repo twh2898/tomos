@@ -25,7 +25,7 @@ compile: $(ODIR)tdriver.o $(ODIR)kernel.o $(ODIR)keyboard.o $(ODIR)idt.o
 	$(ASM) $(ASMFLAGS) $(SDIR)boot.asm -o $(ODIR)boot.o
 
 run:
-	qemu-system-i386 -kernel $(NAME)
+	qemu-system-x86_64 -kernel $(NAME)
 
 clean:
 	if ls $(ODIR)* 1> /dev/null 2>&1; then rm $(ODIR)*; fi
