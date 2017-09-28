@@ -5,14 +5,16 @@
 #include <stdint.h>
 #include <boot.h>
 #include <kernel/asm.h>
-#include <kernel/idt.h>
 #include <kernel/tty.h>
 #include <kernel/keyboard.h>
 
+void interrupt_handler()
+{
+
+}
+
 void kmain(void)
 {
-	idt_init();
-
 	uint8_t reset = 0x07;
 	term_set_color(reset);
 	term_cls();
@@ -28,17 +30,17 @@ void kmain(void)
 	printf("%d\n", store);
 	printf("Last one, here is are two pointers 0x%p 0x%p\n", &str, &store);
 
-	//~ printf("Now for the real test, colors:\n");
+	printf("Now for the real test, colors:\n");
 	int i, j;
-	//~ for (i = 0; i <= 0xF; i++)
-	//~ {
-		//~ for (j = 0; j <= 0xF; j++)
-		//~ {
-			//~ term_set_color(vga_color(j, i));
-			//~ printf("%X%X ", j, i);
-		//~ }
-		//~ puts("\n");
-	//~ }
+	for (i = 0; i <= 0xF; i++)
+	{
+		for (j = 0; j <= 0xF; j++)
+		{
+			term_set_color(vga_color(j, i));
+			printf("%X%X ", j, i);
+		}
+		puts("\n");
+	}
 
 	term_set_color(reset);
 	//~ for (i = 0; i <= 0xF; i++)
@@ -55,37 +57,34 @@ void kmain(void)
 	term_disable_cursor();
 	term_enable_cursor(14, 15);
 
-	bool lshift = false;
-	bool rshift = false;
-
-	int count_1 = 0;
-	char lastScanCode = 0;
 	uint8_t last_sec = 0;
 
 	for (;;)
 	{
-		/*
-		char scanCode = inb(0x60);
-		if (scanCode != lastScanCode)
+		int scancode = waitScanCode();
+		// switch(scancode)
+		// {
+		// 	case 0x48:
+		// 		term_set_cursor(curs_x, curs_y - 1);
+		// 		break;
+		// 	case 0x50:
+		// 		term_set_cursor(curs_x, curs_y + 1);
+		// 		break;
+		// 	case 0x4B:
+		// 		term_set_cursor(curs_x - 1, curs_y);
+		// 		break;
+		// 	case 0x4D:
+		// 		term_set_cursor(curs_x + 1, curs_y);
+		// 		break;
+		// 	default:
+		// 		printf("0x%X ", scancode);
+		// }
+		if (scancode > 0)
 		{
-			lastScanCode = scanCode;
-			char key = asChar(scanCode, false);
-
-			if (key > 0)
-			{
-				term_putc(key);
-			}
+			term_putc(asChar(scancode, false));
 		}
-
-		if (lastScanCode == 0x1)
-		{
-			break;
-		}
-		*/
-
 		outb(0x70, 0x00);
 		uint8_t sec = inb(0x71);
-		//~ term_puti(sec, 10, false);
 
 		if (sec != last_sec)
 		{
@@ -94,13 +93,9 @@ void kmain(void)
 			term_set_cursor(60, 0);
 			outb(0x70, 0x04);
 			uint8_t hour = inb(0x71);
-			//~ term_puti(hour, 10, false);
-			//~ term_putc(':');
 
 			outb(0x70, 0x02);
 			uint8_t min = inb(0x71);
-			//~ term_puti(min, 10, false);
-			//~ term_putc(':');
 
 			last_sec = sec;
 			printf("The time is %d:%d:%d", hour, min, sec);
