@@ -5,25 +5,6 @@
 #include <kernel/asm.h>
 #include <kernel/keyboard.h>
 
-char readScanCode() {
-	return inb(0x60);
-}
-
-char c = 0;
-
-char waitScanCode() {
-    do {
-        if(inb(0x60)!=c) {
-            c=inb(0x60);
-            if (c > 0)
-				break;
-        }
-    } while(1);
-
-    //~ outb(0x20, 0x20);
-    return c;
-}
-
 char keyMap[0xFF] = {
 	0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '+', '\b', '\t',
 	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0, 'a', 's',

@@ -65,6 +65,7 @@ void idt_init(void)
 }
 
 void keyboard_handler_main(void) {
+	puts("I'm not doing this...");
 	unsigned char status;
 	char keycode;
 
