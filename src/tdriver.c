@@ -92,7 +92,15 @@ void term_putc(const char c)
 		{
 			if (curs_x == 0)
 			{
-				curs_x = SCREEN_WIDTH;
+				if (curs_y == 0)
+				{
+					curs_x = 1;
+				}
+				else
+				{
+					curs_x = SCREEN_WIDTH;
+					curs_y--;
+				}
 			}
 			curs_x--;
 
