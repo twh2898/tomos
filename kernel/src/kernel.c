@@ -25,13 +25,14 @@ void demo()
 
 	terminal_set_color(reset);
 	printf("Lets demo some cool features of printf\n");
-	size_t len = printf("Like numbers %% d%-3d d%04d u%u x%x X%03X and characters %c %s cool? %b\n", 10, -10, 10, 0xe0f, 0xff3, 'c', "string", true);
-	int store;
-	printf("That was %d characters!%n And that sentance was ", len, &store);
-	printf("%d\n", store);
-	printf("Last one, here is are two pointers 0x%p 0x%p\n", &str, &store);
+	size_t len = printf("Like the percent sign %%, \nan signed int %d, a signed int with width formatting %4d, \nleading zeros %04d, left align %-4d\n", 10, 10, 10, 10);
+	len += printf("How about negative numbers: signed %d and unsigned %u\n", -10, -10);
+	len += printf("Now for non decimal 0x%04x and 0x%04X or octal %o\n", 1234, 1234, 1234);
+	len += printf("Theres booleans to %b and chars like %c and strings like %s\n", true, 'c', "this");
+	int store = 0;
+	len += printf("The last part is pointers 0x%08p\n", &store);
 
-	printf("Now for the real test, colors:\n");
+	// printf("Now for the real test, colors:\n");
 	int i, j;
 	for (i = 0; i <= 0xF; i++)
 	{
@@ -44,16 +45,6 @@ void demo()
 	}
 
 	terminal_set_color(reset);
-	//~ for (i = 0; i <= 0xF; i++)
-	//~ {
-		//~ for (j = 0; j <= 0xF; j++)
-		//~ {
-			//~ printf(" %c ", j | i << 4);
-		//~ }
-		//~ puts("\n");
-	//~ }
-
-	printf("Testing some assembly: 0x%X", inb(0x60));
 
 	terminal_disable_cursor();
 	terminal_enable_cursor(14, 15);
