@@ -8,6 +8,7 @@
 #include <kernel/tty.h>
 #include <kernel/idt.h>
 #include <kernel/keyboard.h>
+#include <libc/stdio.h>
 
 const uint8_t reset = 0x07;
 
@@ -131,7 +132,7 @@ void kmain(void)
 					break;
 				default:
 					if (press)
-						term_putc(asChar(key, lshift || rshift));
+						putchar(asChar(key, lshift || rshift));
 			}
 			// printf("Key 0x%X is %s\n", key, press ? "Pressed" : "Released");
 		}

@@ -8,10 +8,14 @@ CFLAGS = -O2 -m32 -c -I../includes -nostdlib -fno-builtin -ffreestanding -fno-st
 SDIR = src/
 BDIR = build/
 
-SOURCES := $(wildcard $(SDIR)*.c)
+SOURCES := $(shell find $(SDIR) -type f -name '*.c')
 OBJECTS := $(patsubst $(SDIR)%.c, $(BDIR)%.o, $(SOURCES))
 
 all: init compile copy
+
+dbg:
+	@echo Sources: $(SOURCES)
+	@echo Objects: $(OBJECTS)
 
 clean:
 	@echo :libc:Cleaning build directory
@@ -23,6 +27,7 @@ init: clean
 	@mkdir -p build
 
 $(BDIR)%.o: $(SDIR)%.c
+	$(foreach d,$(subst /, ,${@D}),mkdir -p $d && cd $d && ):
 	$(CC) $(CFLAGS) -o $@ $<
 
 compile: $(OBJECTS)

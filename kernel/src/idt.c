@@ -7,6 +7,7 @@
 #include <kernel/idt.h>
 #include <kernel/tty.h>
 #include <kernel/keyboard.h>
+#include <libc/stdio.h>
 
 struct IDT_entry IDT[IDT_SIZE];
 
@@ -78,7 +79,7 @@ void keyboard_handler_main(void) {
 		keycode = inb(0x60);
 		if(keycode < 0)
 			return;
-		term_putc(asChar(keycode, false));
+		putchar(asChar(keycode, false));
 		//~ vidptr[current_loc++] = keyboard_map[keycode];
 		//~ vidptr[current_loc++] = 0x07;
 	}

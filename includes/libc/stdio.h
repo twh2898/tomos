@@ -4,6 +4,7 @@
 #ifndef LIBC_STDIO_H
 #define LIBC_STDIO_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 

@@ -10,7 +10,7 @@ CFLAGS = -O2 -m32 -c -I../includes -nostdlib -fno-builtin -ffreestanding -fno-st
 SDIR = src/
 BDIR = build/
 
-SOURCES := $(wildcard $(SDIR)*.asm) $(wildcard $(SDIR)*.c)
+SOURCES := $(shell find $(SDIR) -type f -name '*.asm') $(shell find $(SDIR) -type f -name '*.c')
 OBJECTS := $(patsubst $(SDIR)%.asm, $(BDIR)%.o, $(SOURCES)) $(patsubst $(SDIR)%.c, $(BDIR)%.o, $(SOURCES))
 
 all: init compile copy
@@ -25,9 +25,11 @@ init: clean
 	@mkdir -p build
 
 $(BDIR)%.o: $(SDIR)%.c
+	$(foreach d,$(subst /, ,${@D}),mkdir -p $d && cd $d && ):
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BDIR)%.o: $(SDIR)%.asm
+	$(foreach d,$(subst /, ,${@D}),mkdir -p $d && cd $d && ):
 	$(ASM) $(ASMFLAGS) -o $@ $<
 
 compile: $(OBJECTS)
