@@ -8,13 +8,11 @@ NAME = kernel.bin
 
 SDIR = build/
 
-OBJECTS := $(shell find $(SDIR) -type f -name '*.o')
-
 all: init compile link run
 
 dbg:
 	@echo $(SDIR)
-	@echo $(OBJECTS)
+	@echo $(shell find $(SDIR) -type f -name '*.o')
 
 clean:
 	@echo ::Cleaning build directory
@@ -33,7 +31,7 @@ compile:
 
 link:
 	@echo ::Linking
-	$(LD) $(LDFLAGS) -o $(NAME) $(OBJECTS)
+	$(LD) $(LDFLAGS) -o $(NAME) $(shell find $(SDIR) -type f -name '*.o')
 
 run:
 	@echo ::Running
