@@ -3,6 +3,7 @@
  */
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <kernel/asm.h>
 #include <kernel/tty.h>
 
@@ -76,6 +77,12 @@ static inline void shift_lines()
 			write_character(' ', color, vid_loc(x, y));
 		}
 	}
+}
+
+size_t terminal_putchar(char c)
+{
+	term_putc(c);
+	return 1;
 }
 
 void term_putc(const char c)
@@ -236,19 +243,32 @@ void term_cls()
 	update_cursor();
 }
 
-static inline bool is_digit(char c)
+static size_t numSizeu(uint32_t num, uint32_t base)
 {
-	return '0' <= c && c <= '9';
+	size_t digits = 0;
+	while (num)
+	{
+		num /= base;
+	}
+	return digits;
 }
 
-static inline bool is_alpha(char c)
+static size_t numSizei(int32_t num, int32_t base)
 {
-	return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+	size_t digits = 0;
+	while (num)
+	{
+		num /= base;
+	}
+	return digits;
 }
 
-static inline bool is_flag(char c)
+static size_t strlen(const char* str)
 {
-	return c == '-' || c == '+' || c == ' ' || c == '0';
+	size_t count = 0;
+	while (*str++);
+		count++;
+	return count;
 }
 
 size_t printf(const char* format, ...)
@@ -259,43 +279,162 @@ size_t printf(const char* format, ...)
 	size_t written = 0;
 	while (*format)
 	{
-		if (format[0] == '%')
+		if (*format == '%')
 		{
-			switch(format[1])
+			int width = 0;
+			bool lead_zero = format[1] == '0';
+			bool left_align = format[1] == '-';
+
+			if (left_align)
+				lead_zero = false;
+
+			start_format:
+			format++;
+			switch(*format)
 			{
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					width *= 10;
+					width += (*format - '0');
+				case '-':
+					goto start_format;
 				case 'd':
 				{
 					int arg = va_arg(parameters, int);
+					size_t numWidth = numSizei(arg, 10);
 					if (arg < 0)
 					{
 						term_putc('-');
 						arg = -arg;
+						numWidth++;
+					}
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
 					}
 					written += puti((unsigned int) arg, 10, false);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'u':
 				{
 					unsigned int arg = va_arg(parameters, unsigned int);
+					size_t numWidth = numSizeu(arg, 10u);
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
+					}
 					written += puti(arg, 10, false);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'o':
 				{
 					unsigned int arg = va_arg(parameters, unsigned int);
+					size_t numWidth = numSizeu(arg, 8u);
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
+					}
 					written += puti(arg, 8, false);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'x':
 				{
-					int arg = va_arg(parameters, int);
+					unsigned int arg = va_arg(parameters, unsigned int);
+					size_t numWidth = numSizeu(arg, 16u);
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
+					}
 					written += puti(arg, 16, false);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'X':
 				{
-					int arg = va_arg(parameters, int);
+					unsigned int arg = va_arg(parameters, unsigned int);
+					size_t numWidth = numSizeu(arg, 10u);
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
+					}
 					written += puti(arg, 16, true);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'c':
@@ -308,13 +447,51 @@ size_t printf(const char* format, ...)
 				case 's':
 				{
 					const char* arg = va_arg(parameters, const char*);
+					size_t strWidth = strlen(arg);
+					if (width > strWidth && !left_align)
+					{
+						int i;
+						for (i = strWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 					written += puts(arg);
+					if (width > strWidth && left_align)
+					{
+						int i;
+						for (i = strWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'p':
 				{
-					const void* arg = va_arg(parameters, const void*);
-					written += puti((int) arg, 16, true);
+					unsigned int arg = va_arg(parameters, unsigned int);
+					size_t numWidth = numSizeu(arg, 10u);
+					if (width > numWidth && !left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(lead_zero ? '0' : ' ');
+							written++;
+						}
+					}
+					written += puti((unsigned int) arg, 16, true);
+					if (width > numWidth && left_align)
+					{
+						int i;
+						for (i = numWidth; i < width; i++)
+						{
+							term_putc(' ');
+							written++;
+						}
+					}
 				}
 				break;
 				case 'n':
@@ -343,7 +520,6 @@ size_t printf(const char* format, ...)
 				default:
 					break;
 			}
-			format++;
 		}
 		else
 		{

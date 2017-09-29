@@ -5,7 +5,7 @@
 ASM = nasm
 ASMFLAGS = -f elf32
 CC = gcc
-CFLAGS = -O2 -m32 -c -Iincludes -nostdlib -fno-builtin -ffreestanding -fno-stack-protector
+CFLAGS = -O2 -m32 -c -I../includes -nostdlib -fno-builtin -ffreestanding -fno-stack-protector
 
 SDIR = src/
 BDIR = build/
@@ -36,5 +36,3 @@ compile: $(OBJECTS)
 copy:
 	@echo :kernel:Copying binaries to linking directory
 	cp -r build/ ../build/kernel/
-	@echo :kernel:Copying includes to linking directory
-	cp -r includes/ ../includes/

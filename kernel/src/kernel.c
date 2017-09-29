@@ -23,7 +23,7 @@ void demo()
 
 	term_set_color(reset);
 	printf("Lets demo some cool features of printf\n");
-	size_t len = printf("Like numbers %% d%d d%d u%u x%x X%X and characters %c %s cool? %b\n", 10, -10, 10, 0xe0f, 0xff3, 'c', "string", true);
+	size_t len = printf("Like numbers %% d%-3d d%04d u%u x%x X%03X and characters %c %s cool? %b\n", 10, -10, 10, 0xe0f, 0xff3, 'c', "string", true);
 	int store;
 	printf("That was %d characters!%n And that sentance was ", len, &store);
 	printf("%d\n", store);

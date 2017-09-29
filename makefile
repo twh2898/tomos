@@ -16,7 +16,6 @@ dbg:
 
 clean:
 	@echo ::Cleaning build directory
-	@if [ -d includes ]; then rm -r includes/; fi
 	@if [ -d build ]; then rm -r build/; fi
 	@if [ -f $(NAME) ]; then rm $(NAME); fi
 
