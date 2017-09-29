@@ -91,7 +91,7 @@ static void shift_lines()
 	
 	for (y = VGA_HEIGHT - 1; y < VGA_HEIGHT; y++)
 		for (x = 0; x < VGA_WIDTH; x++)
-			terminal_write(' ', terminal_color, x, y);
+			terminal_write(' ', 0x07, x, y);
 }
 
 void terminal_putchar(char c)
