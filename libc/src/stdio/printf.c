@@ -2,6 +2,7 @@
  * libc/stdio/printf.c
  */
 #include <stdarg.h>
+#include <libc/string.h>
 #include <libc/stdio.h>
 
 static size_t numSizeu(uint32_t num, uint32_t base)
@@ -22,14 +23,6 @@ static size_t numSizei(int32_t num, int32_t base)
 		num /= base;
 	}
 	return digits;
-}
-
-static size_t strlen(const char* str)
-{
-	size_t count = 0;
-	while (*str++);
-		count++;
-	return count;
 }
 
 size_t printf(const char* format, ...)
