@@ -13,15 +13,16 @@ BDIR = build/
 SOURCES := $(shell find $(SDIR) -type f -name '*.asm') $(shell find $(SDIR) -type f -name '*.c')
 OBJECTS := $(patsubst $(SDIR)%.asm, $(BDIR)%.o, $(SOURCES)) $(patsubst $(SDIR)%.c, $(BDIR)%.o, $(SOURCES))
 
+BUILD_NAME = kernel
+
 all: init compile copy
 
 clean:
-	@echo :kernel:Cleaning build directory
+	@echo :$(BUILD_NAME):Cleaning build directory
 	@if [ -d $(BDIR) ]; then rm -r $(BDIR); fi
 
 init: clean
 	@mkdir -p src
-	@mkdir -p includes
 	@mkdir -p build
 
 $(BDIR)%.o: $(SDIR)%.c
@@ -32,9 +33,11 @@ $(BDIR)%.o: $(SDIR)%.asm
 	$(foreach d,$(subst /, ,${@D}),mkdir -p $d && cd $d && ):
 	$(ASM) $(ASMFLAGS) -o $@ $<
 
-compile: $(OBJECTS)
-	@echo :kernel:Compiling
+compile: .compile_message $(OBJECTS)
+
+.compile_message:
+	@echo :$(BUILD_NAME):Compiling
 
 copy:
-	@echo :kernel:Copying binaries to linking directory
-	cp -r build/ ../build/kernel/
+	@echo :$(BUILD_NAME):Copying binaries to linking directory
+	cp -r build/ ../build/$(BUILD_NAME)/

@@ -34,4 +34,4 @@ link:
 
 run:
 	@echo ::Running
-	qemu-system-x86_64 -kernel $(NAME)
+	qemu-system-i386 -kernel $(NAME)
